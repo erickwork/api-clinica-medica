@@ -29,7 +29,7 @@ public class ConsultaService {
     private static boolean isClinicaAberta(LocalDateTime dataHora){
         DayOfWeek dayOfWeek  = dataHora.getDayOfWeek();
         int horaConsulta = dataHora.getHour();
-        return dayOfWeek  != dayOfWeek.MONDAY && horaConsulta >= 7 && horaConsulta <=19;
+        return dayOfWeek  != dayOfWeek.SUNDAY && horaConsulta >= 7 && horaConsulta <=19;
     }
 
     private  boolean isMedicoDisponivel(Long medico){

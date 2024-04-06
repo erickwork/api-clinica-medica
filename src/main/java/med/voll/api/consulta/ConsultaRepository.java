@@ -12,7 +12,7 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
     //@Query("SELECT c FROM Consulta c WHERE c.paciente = :paciente and c.dataHora = cast(:dataHora as localdatetime ) and c.ativo = true")
     //boolean findPacienteDisponivel(Long paciente, LocalDateTime dataHora);
 
-    @Query("SELECT c FROM Consulta c WHERE c.paciente = :paciente and c.dataHora = :dataHora and c.ativo = true ")
+    @Query("SELECT c FROM Consulta c WHERE c.paciente = :paciente and DATE(c.dataHora) = DATE(:dataHora) and c.ativo = true ")
     Optional<Consulta> findPacienteDisponivel(Long paciente, LocalDateTime dataHora);
 
 
