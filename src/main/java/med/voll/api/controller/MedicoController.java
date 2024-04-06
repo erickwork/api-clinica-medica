@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/medicos")
@@ -19,8 +18,8 @@ public class MedicoController {
 
     @PostMapping
     @Transactional
-    public void cadastrar(@RequestBody @Valid DadosCadastroMedico dados){
-        repository.save(new Medico(dados));
+    public Medico cadastrar(@RequestBody @Valid DadosCadastroMedico dados){
+        return repository.save(new Medico(dados));
     }
 
     @GetMapping
@@ -44,6 +43,7 @@ public class MedicoController {
         medico.excluir();
 
     }
+
 
 
 

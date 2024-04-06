@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import med.voll.api.endereco.DadosEndereco;
 import med.voll.api.endereco.Endereco;
 
+import java.time.LocalDateTime;
+
 @Table(name = "medicos")
 @Entity(name = "Medico")
 @Getter

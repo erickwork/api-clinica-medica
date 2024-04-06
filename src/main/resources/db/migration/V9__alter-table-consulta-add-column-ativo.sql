@@ -1,0 +1,2 @@
+ALTER TABLE consulta
+    ADD COLUMN ativo BOOLEAN NOT NULL;
