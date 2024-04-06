@@ -60,11 +60,11 @@ public class ConsultaService {
         boolean clinicaAberta = isClinicaAberta(dados.dataHora());
         boolean medicoDisponivel = isMedicoDisponivel(dados.medico());
         boolean pacienteAtivo = isPacienteAtivo(dados.paciente());
-        //boolean consultaAberta = isConsultaAberta(dados.dataHora(), dados.paciente());
-        //boolean consultaAbertaMedico = isConsultaAbertaMedico(dados.dataHora(), dados.medico());
-         if(clinicaAberta && medicoDisponivel && pacienteAtivo) return true;
-         else{
-             return false;
+        boolean consultaAberta = isConsultaAberta(dados.dataHora(), dados.paciente());
+        boolean consultaAbertaMedico = isConsultaAbertaMedico(dados.dataHora(), dados.medico());
+        if(clinicaAberta && medicoDisponivel && pacienteAtivo && !consultaAbertaMedico && !consultaAberta) return true;
+        else{
+            return false;
          }
     }
 }
