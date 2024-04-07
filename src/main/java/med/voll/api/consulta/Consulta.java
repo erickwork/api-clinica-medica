@@ -37,9 +37,13 @@ public class Consulta {
 
     public Consulta(DadosCadastroConsulta dados) {
         this.ativo = true;
-        this.paciente = dados.paciente();
-        this.medico = dados.medico();
-        this.dataHora = dados.dataHora();
+        this.paciente = dados.getPaciente();
+        this.medico = dados.getMedico();
+        this.dataHora = dados.getDataHora();
 
+    }
+
+    public void excluir() {
+        this.ativo = false;
     }
 }

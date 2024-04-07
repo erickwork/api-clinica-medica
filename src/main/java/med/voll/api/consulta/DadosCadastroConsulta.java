@@ -1,33 +1,52 @@
 package med.voll.api.consulta;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
-public record DadosCadastroConsulta(
-        Long medico,
+
+
+
+public class DadosCadastroConsulta{
+
+        private Long medico;
         @NotNull
-
-        Long paciente,
+        private Long paciente;
 
         @NotNull
-        LocalDateTime dataHora) {
+        private LocalDateTime dataHora;
 
-        @Override
-        public Long medico() {
+
+        public Long getMedico() {
                 return medico;
         }
 
-        @Override
-        public Long paciente() {
+        public void setMedico(Long medico) {
+                this.medico = medico;
+        }
+
+        public Long getPaciente() {
                 return paciente;
         }
 
-        @Override
-        public LocalDateTime dataHora() {
+        public void setPaciente(Long paciente) {
+                this.paciente = paciente;
+        }
+
+        public LocalDateTime getDataHora() {
                 return dataHora;
         }
+
+        public void setDataHora(LocalDateTime dataHora) {
+                this.dataHora = dataHora;
+        }
+
+        public DadosCadastroConsulta(Long medico, Long paciente, LocalDateTime dataHora){
+                this.dataHora = dataHora;
+                this.medico = medico;
+                this.paciente = paciente;
+        }
+
+
 }

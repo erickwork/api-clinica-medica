@@ -1,10 +1,12 @@
 package med.voll.api.consulta;
 
-import med.voll.api.paciente.Paciente;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
@@ -19,4 +21,6 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
     @Query("SELECT c FROM Consulta c WHERE c.medico = :medico and c.dataHora = :dataHora  and c.ativo = true ")
     Optional<Consulta>findMedicoDisponivel(Long medico, LocalDateTime dataHora);
 
+
+    List<Consulta> findAllByAtivoTrue();
 }
