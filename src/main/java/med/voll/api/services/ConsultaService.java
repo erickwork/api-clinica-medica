@@ -8,9 +8,11 @@ import med.voll.api.medico.MedicoRepository;
 import med.voll.api.paciente.PacienteRepository;
 import org.hibernate.validator.constraintvalidators.RegexpURLValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -38,54 +40,76 @@ public class ConsultaService {
     }
 
     private  boolean isMedicoDisponivel(Long medico){
-        boolean teste = medicoRepository.findById(medico).isPresent();
-        return teste;
+        return  medicoRepository.findAByIdAtivoTrue(medico);
     }
 
     private boolean isPacienteAtivo(Long paciente){
-        boolean teste = pacienteRepository.findById(paciente).isPresent();
-        return teste;
+        return pacienteRepository.findAByIdAtivoTrue(paciente);
     }
 
     private  boolean isConsultaAberta(LocalDateTime dataHora, Long paciente){
-        boolean teste = consultaRepository.findPacienteDisponivel(paciente, dataHora).isPresent();
-        return teste;
+        return consultaRepository.findPacienteDisponivel(paciente, dataHora).isPresent();
     }
 
     public boolean isConsultaAbertaMedico(LocalDateTime dataHora, Long medico){
-        boolean teste = consultaRepository.findMedicoDisponivel(medico, dataHora).isPresent();
-        return teste;
+        return consultaRepository.findMedicoDisponivel(medico, dataHora).isPresent();
+    }
+
+    private boolean isAntecedencia(LocalDateTime dataHora){
+        LocalDateTime agora = LocalDateTime.now();
+        Duration diferenca = Duration.between(agora, dataHora);
+        return diferenca.toMinutes() >= 30;
     }
 
 
     public List<String> validarConsulta(DadosCadastroConsulta dados) {
 
         List<String> falhas = new ArrayList<>();
-        List<Long> idMedico = new ArrayList<>();
 
-        boolean clinicaAberta = isClinicaAberta(dados.getDataHora());
+        if (!isAntecedencia(dados.getDataHora())){
+            falhas.add("Antecedência menor que 30 minutos");
+        }
+
+
         if (!isClinicaAberta(dados.getDataHora())) {
             falhas.add("Clínica fechada no horário da consulta");
         }
-        boolean medicoDisponivel = isMedicoDisponivel(dados.getMedico());
-        if (!isMedicoDisponivel(dados.getMedico())) {
-            falhas.add("Médico não está disponível");
-        }
-        boolean pacienteAtivo = isPacienteAtivo(dados.getPaciente());
+
         if (!isPacienteAtivo(dados.getPaciente())) {
             falhas.add("Paciente não está ativo ou não existe");
-        }
-        boolean consultaAberta = isConsultaAberta(dados.getDataHora(), dados.getPaciente());
-        if (isConsultaAberta(dados.getDataHora(), dados.getPaciente())) {
-            falhas.add("O paciente já possui uma consulta para esse dia");
-        }
-
-        boolean consultaAbertaMedico = isConsultaAbertaMedico(dados.getDataHora(), dados.getMedico());
-        if (isConsultaAbertaMedico(dados.getDataHora(), dados.getMedico())) {
-            falhas.add("O médico não está disponivel neste horário");
+        }else{
+            if (isConsultaAberta(dados.getDataHora(), dados.getPaciente())) {
+                falhas.add("O paciente já possui uma consulta para esse dia");
+            }
         }
 
+        if (dados.getMedico() == null){
+            List<Long> consultas = consultaRepository.buscarMedicoParaConsulta(dados.getDataHora());
+            if (consultas.isEmpty()){
+                falhas.add("Sem médico disponivel para horário");
+            }else{
+                Long idMedico = consultas.getFirst();
+                dados.setMedico(idMedico);
+                if (!isMedicoDisponivel(dados.getMedico())) {
+                    falhas.add("Médico não está disponível");
+                }else{
+                    if (isConsultaAbertaMedico(dados.getDataHora(), dados.getMedico())) {
+                        falhas.add("O médico não está disponivel neste horário");
+                    }
+                }
 
+            }
+        }else{
+
+            if (!isMedicoDisponivel(dados.getMedico())) {
+                falhas.add("Médico não está disponível");
+            }else{
+                if (isConsultaAbertaMedico(dados.getDataHora(), dados.getMedico())) {
+                    falhas.add("O médico não está disponivel neste horário");
+                }
+            }
+
+        }
         return falhas;
     }
 }

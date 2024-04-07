@@ -13,7 +13,13 @@ public interface MedicoRepository extends JpaRepository<Medico, Long> {
     @Query("SELECT m FROM Medico m WHERE m.ativo = true")
     Page<Medico> findAllByAtivoTrue(Pageable paginacao);
 
-    @Query("SELECT m FROM Medico m WHERE m.ativo = true")
-    List<Medico> findAllByAtivoTrues();
+    @Query("SELECT CASE WHEN COUNT(m) > 0 THEN true ELSE false END FROM Medico m WHERE m.id = :medico AND m.ativo = true")
+    boolean findAByIdAtivoTrue(Long medico);
+
+//    @Query("SELECT m FROM Medico m WHERE m.ativo = true")
+//    List<Medico> findAllByAtivoTrues();
+
+//    @Query("SELECT m FROM Medico m WHERE m.id = :medico and m.ativo = true ")
+//    boolean findAllByAtivoTrue(Long medico);
 
 }

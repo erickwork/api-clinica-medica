@@ -5,11 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import med.voll.api.medico.Medico;
-import med.voll.api.paciente.Paciente;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Table(name = "consulta")
@@ -22,6 +19,9 @@ public class Consulta {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "motivo_cancelamento")
+    private String motivo;
 
     @Column(name = "medico")
     private Long medico;
@@ -43,7 +43,14 @@ public class Consulta {
 
     }
 
-    public void excluir() {
+    public void cancelar(String motivo) {
         this.ativo = false;
+        this.motivo = motivo;
+    }
+
+    public boolean antecedencia(LocalDateTime dataHora) {
+        LocalDateTime agora = LocalDateTime.now();
+        Duration diferenca = Duration.between(agora, dataHora);
+        return diferenca.toHours() > 24;
     }
 }

@@ -1,6 +1,9 @@
 package med.voll.api.controller;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import med.voll.api.consulta.CancelarConsulta;
 import med.voll.api.consulta.Consulta;
 import med.voll.api.consulta.ConsultaRepository;
 import med.voll.api.consulta.DadosCadastroConsulta;
@@ -13,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import med.voll.api.services.ConsultaService;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +41,7 @@ public class ConsultaController {
     public ResponseEntity<?> cadastrar(@RequestBody DadosCadastroConsulta dados) {
 
         List<String> falhas = consultaService.validarConsulta(dados);
+
         try {
             if (falhas.isEmpty()) {
                 Consulta consulta = new Consulta(dados);
@@ -57,13 +62,17 @@ public class ConsultaController {
     }
 
     @DeleteMapping
-    @RequestMapping("/{id}")
     @Transactional
-    public ResponseEntity<?> excluir(@PathVariable long id) {
-        var consulta = repository.getReferenceById(id);
-        if (consulta.isAtivo()) {
-            consulta.excluir();
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Consulta cancelada com sucesso");
+    public ResponseEntity<?> cancelar(@RequestBody @Valid CancelarConsulta cancelar) {
+        boolean validConsulta = repository.findAllByIdAtivoTrue(cancelar.getConsulta());
+        var consulta = repository.getReferenceById(cancelar.getConsulta());
+        if (validConsulta) {
+            if (consulta.antecedencia(consulta.getDataHora())) {
+                consulta.cancelar(cancelar.getMotivo().toString());
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body("Consulta cancelada com sucesso");
+            }else{
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("É necessário uma antecedência de 24 horas");
+            }
         }else{
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Consulta ja cancelada ou inexistente");
         }
