@@ -27,6 +27,8 @@ public class MedicoController {
         return repository.findAllByAtivoTrue(paginacao).map(DadosListagemMedico::new);
     }
 
+
+    //Atualização
     @PutMapping
     @Transactional
     public void atualizar(@RequestBody @Valid DadosAtualizacaoMedico dados){
@@ -34,6 +36,8 @@ public class MedicoController {
         medico.atualizarInformacoes(dados);
 
     }
+
+    //delete
 
     @DeleteMapping
     @RequestMapping("/{id}")
